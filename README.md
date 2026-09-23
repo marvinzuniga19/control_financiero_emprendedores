@@ -16,6 +16,7 @@ Aplicación local creada con Python, CustomTkinter, SQLite y Matplotlib. Trabaja
 - Montos guardados en centavos para evitar errores de redondeo.
 - Base de datos SQLite local con migraciones automáticas y copia de seguridad.
 - Tema claro, oscuro o según el sistema (persistente).
+- Icono propio en la ventana y en la bandeja del sistema (minimizar a bandeja desde el botón de cerrar).
 
 ## Requisitos
 
@@ -87,8 +88,16 @@ Dentro del entorno virtual instala PyInstaller:
 
 ```powershell
 python -m pip install pyinstaller
-pyinstaller --noconfirm --windowed --name ControlFinancieroPro --collect-all customtkinter main.py
+pyinstaller --noconfirm --windowed --name ControlFinancieroPro --collect-all customtkinter --add-data "assets;assets" main.py
 ```
+
+En Linux el separador de `--add-data` es `:`:
+
+```bash
+pyinstaller --noconfirm --windowed --name ControlFinancieroPro --collect-all customtkinter --add-data "assets:assets" main.py
+```
+
+En Linux, la bandeja usa el backend Xorg de pystray (menú limitado a "Mostrar") a menos que el escritorio disponga de AppIndicator; `pip install pystray` instala `python-xlib` automáticamente.
 
 El ejecutable aparecerá en `dist/ControlFinancieroPro/`. Se recomienda distribuir la carpeta completa generada por PyInstaller.
 

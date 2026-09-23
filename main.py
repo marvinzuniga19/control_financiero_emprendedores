@@ -2,11 +2,20 @@ from __future__ import annotations
 
 import sqlite3
 from datetime import date
+from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 import customtkinter as ctk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from PIL import Image, ImageTk
+
+try:
+    import pystray
+
+    PYSTRAY_AVAILABLE = True
+except ImportError:
+    PYSTRAY_AVAILABLE = False
 
 from database import Database, InUseError
 from services import (
@@ -37,6 +46,27 @@ CHART_FG = {"light": "#1E293B", "dark": "#E2E8F0"}
 THEME_LABELS = {"System": "system", "Claro": "light", "Oscuro": "dark"}
 THEME_OPTIONS = {mode: label for label, mode in THEME_LABELS.items()}
 
+ICON_PATH = Path(__file__).resolve().parent / "assets" / "icon.ico"
+
+
+def load_icon_image() -> Image.Image | None:
+    try:
+        return Image.open(ICON_PATH).convert("RGBA")
+    except (OSError, ValueError, FileNotFoundError):
+        return None
+
+
+def set_window_icon(root) -> None:
+    image = load_icon_image()
+    if image is None:
+        return
+    try:
+        photo = ImageTk.PhotoImage(image.resize((64, 64), Image.Resampling.LANCZOS))
+        root._icon_photo = photo
+        root.iconphoto(True, photo)
+    except Exception:
+        pass
+
 
 class MetricCard(ctk.CTkFrame):
     def __init__(self, master, title: str, accent: str = BLUE):
@@ -55,15 +85,18 @@ class FinanceApp(ctk.CTk):
         super().__init__()
         self.db = Database()
         self.selected_transaction_id: int | None = None
+        self.tray = None
         self._apply_saved_theme()
         self.title("Control Financiero Pro - Córdobas Nicaragüenses")
         self.geometry("1360x820")
         self.minsize(1120, 700)
-        self.protocol("WM_DELETE_WINDOW", self.destroy)
+        set_window_icon(self)
+        self.protocol("WM_DELETE_WINDOW", self._on_close)
         self._configure_tree_style()
         self._build_layout()
         self.load_settings()
         self.refresh_all()
+        self._setup_tray()
 
     def is_dark(self) -> bool:
         return ctk.get_appearance_mode() == "Dark"
@@ -73,6 +106,52 @@ class FinanceApp(ctk.CTk):
         if theme not in THEME_LABELS.values():
             theme = "system"
         ctk.set_appearance_mode(theme)
+
+    def _setup_tray(self):
+        if not PYSTRAY_AVAILABLE:
+            return
+        image = load_icon_image()
+        if image is None:
+            return
+        try:
+            from pystray import Icon as TrayIcon, Menu as TrayMenu, MenuItem as TrayMenuItem
+
+            menu = TrayMenu(
+                TrayMenuItem("Mostrar", lambda icon, item: self._show_from_tray(), default=True),
+                TrayMenuItem("Ocultar", lambda icon, item: self._hide_to_tray()),
+                TrayMenu.SEPARATOR,
+                TrayMenuItem("Salir", lambda icon, item: self._quit_app()),
+            )
+            self.tray = TrayIcon("control_financiero_pro", image, "Control Financiero Pro", menu)
+            self.tray.run_detached()
+        except Exception:
+            self.tray = None
+
+    def _show_from_tray(self):
+        self.deiconify()
+        self.lift()
+        self.focus_force()
+
+    def _hide_to_tray(self):
+        self.withdraw()
+
+    def _on_close(self):
+        if self.tray is not None:
+            self._hide_to_tray()
+        else:
+            self.destroy()
+
+    def _quit_app(self):
+        self.destroy()
+
+    def destroy(self):
+        if self.tray is not None:
+            try:
+                self.tray.stop()
+            except Exception:
+                pass
+            self.tray = None
+        super().destroy()
 
     def _configure_tree_style(self):
         dark = self.is_dark()

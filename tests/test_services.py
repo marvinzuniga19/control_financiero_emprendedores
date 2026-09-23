@@ -1,4 +1,6 @@
 import pytest
+from PIL import Image
+from pathlib import Path
 
 from services import (
     build_alerts,
@@ -78,3 +80,11 @@ def test_export_transactions_csv(tmp_path):
     assert "1250.75" in content
     assert "Ventas" in content
     assert content.splitlines()[0].startswith("ID")
+
+
+def test_assets_icon_exists_and_is_readable():
+    path = Path(__file__).resolve().parents[1] / "assets" / "icon.ico"
+    assert path.exists()
+    image = Image.open(path).convert("RGBA")
+    assert image.size[0] > 0 and image.size[1] > 0
+    assert image.mode == "RGBA"
