@@ -122,7 +122,7 @@ class FinanceApp(ctk.CTk):
                 TrayMenu.SEPARATOR,
                 TrayMenuItem("Salir", lambda icon, item: self._quit_app()),
             )
-            self.tray = TrayIcon("control_financiero_pro", image, "Control Financiero Pro", menu)
+            self.tray = TrayIcon("control_financiero_pro", image, "Control Financiero", menu)
             self.tray.run_detached()
         except Exception:
             self.tray = None
