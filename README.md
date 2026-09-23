@@ -9,11 +9,13 @@ Aplicación local creada con Python, CustomTkinter, SQLite y Matplotlib. Trabaja
 - Metas de ingresos y límite de gastos.
 - Alertas automáticas y análisis por categoría.
 - Gráfico mensual de ingresos y gastos.
-- Registro, edición, búsqueda y eliminación de movimientos.
-- Categorías y métodos de pago personalizables.
-- Exportación de movimientos a CSV.
-- Base de datos SQLite local.
-- Tema claro u oscuro según el sistema.
+- Registro, edición, duplicado, búsqueda y eliminación de movimientos.
+- Búsqueda avanzada: texto libre, rango de fechas y tipo (ingreso/gasto).
+- Categorías y métodos de pago personalizables con protección contra borrado en uso.
+- Exportación de movimientos a CSV (respeta los filtros activos).
+- Montos guardados en centavos para evitar errores de redondeo.
+- Base de datos SQLite local con migraciones automáticas y copia de seguridad.
+- Tema claro, oscuro o según el sistema (persistente).
 
 ## Requisitos
 
@@ -66,7 +68,18 @@ La base de datos se crea automáticamente en:
 data/control_financiero.db
 ```
 
-Para hacer una copia de seguridad, cierra la aplicación y copia ese archivo a otra ubicación. Para restaurarla, reemplaza el archivo por la copia guardada.
+Al actualizar el programa, la base de datos existente se migra sola al guardar los montos en centavos. Antes de migrar se genera una copia de seguridad en `data/control_financiero.db.bak`. Si algo sale mal, cierra la aplicación y sustituye `control_financiero.db` por esa copia.
+
+Para hacer una copia manual, cierra la aplicación y copia ese archivo a otra ubicación. Para restaurarla, reemplaza el archivo por la copia guardada.
+
+## Ejecutar las pruebas
+
+Instala las dependencias de desarrollo y ejecuta pytest:
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m pytest
+```
 
 ## Crear un ejecutable para Windows
 

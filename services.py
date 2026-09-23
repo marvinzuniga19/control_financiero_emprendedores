@@ -50,6 +50,24 @@ def validate_iso_date(value: str) -> str:
         raise ValueError("La fecha debe tener el formato AAAA-MM-DD.") from exc
 
 
+def is_dark_mode(mode: str) -> bool:
+    return mode.strip().lower() == "dark"
+
+
+def build_alerts(settings: dict, summary: dict) -> dict:
+    goal = float(settings.get("income_goal") or 0)
+    limit = float(settings.get("expense_limit") or 0)
+    compliance = (summary["income"] / goal * 100) if goal else 0.0
+    used = (summary["expense"] / limit * 100) if limit else 0.0
+    messages = [
+        "Meta de ingresos alcanzada." if compliance >= 100 else "Meta de ingresos aún no alcanzada.",
+        "Gastos sobre el límite." if used > 100 else "Gastos bajo control.",
+    ]
+    if summary["profit"] < 0:
+        messages.append("Atención: el periodo presenta pérdida.")
+    return {"goal": goal, "limit": limit, "compliance": compliance, "used": used, "messages": messages}
+
+
 def export_transactions_csv(rows, path: str | Path) -> None:
     headers = ["ID", "Fecha", "Tipo", "Categoría", "Descripción", "Método", "Monto C$", "Cliente / Proveedor", "Notas"]
     with Path(path).open("w", newline="", encoding="utf-8-sig") as stream:
