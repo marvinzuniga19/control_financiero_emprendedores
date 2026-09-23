@@ -5,5 +5,7 @@ data/*.db
 dist/
 build/
 *.spec
+tests/
+tests-results/
 
 
