@@ -216,7 +216,7 @@ class FinanceApp(ctk.CTk):
         ctk.CTkLabel(filters, text="Periodo").grid(row=0, column=0, padx=5)
         ctk.CTkOptionMenu(filters, variable=self.period_var, values=list(MONTHS.keys()), command=lambda _: self.refresh_dashboard(), width=150).grid(row=1, column=0, padx=5)
         ctk.CTkLabel(filters, text="Año").grid(row=0, column=1, padx=5)
-        self.year_menu = ctk.CTkOptionMenu(filters, variable=self.year_var, values=[str(y) for y in range(date.today().year - 5, date.today().year + 3)], command=lambda _: self.refresh_dashboard(), width=95)
+        self.year_menu = ctk.CTkOptionMenu(filters, variable=self.year_var, values=[str(y) for y in range(date.today().year - 5, date.today().year + 26)], command=lambda _: self.refresh_dashboard(), width=95)
         self.year_menu.grid(row=1, column=1, padx=5)
 
         cards = ctk.CTkFrame(page, fg_color="transparent")
