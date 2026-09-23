@@ -169,7 +169,7 @@ class FinanceApp(ctk.CTk):
         self.sidebar = ctk.CTkFrame(self, width=215, corner_radius=0, fg_color=NAVY)
         self.sidebar.grid(row=0, column=0, sticky="nsew")
         self.sidebar.grid_propagate(False)
-        ctk.CTkLabel(self.sidebar, text="CONTROL\nFINANCIERO PRO", text_color="white", font=ctk.CTkFont(size=21, weight="bold"), justify="left").pack(padx=22, pady=(28, 35), anchor="w")
+        ctk.CTkLabel(self.sidebar, text="CONTROL\nFINANCIERO", text_color="white", font=ctk.CTkFont(size=21, weight="bold"), justify="left").pack(padx=22, pady=(28, 35), anchor="w")
         for text, command in [("Panel", self.show_dashboard), ("Movimientos", self.show_transactions), ("Configuración", self.show_settings)]:
             ctk.CTkButton(self.sidebar, text=text, command=command, height=42, anchor="w", fg_color="transparent", hover_color="#1E3A8A", font=ctk.CTkFont(size=14, weight="bold")).pack(fill="x", padx=12, pady=4)
 
